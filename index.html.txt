@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+      maximum-scale=1.0, user-scalable=no">
+
+<title>🎱 Cagnotte Billard</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cagnotte Billard">
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: white;
+    background:
+        radial-gradient(circle at top, #292929 0%, #090909 45%, #000 100%);
+    padding: 20px 15px 35px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header .ball {
+    font-size: 48px;
+}
+
+.header h1 {
+    margin: 5px 0 0;
+    font-size: 27px;
+    letter-spacing: 2px;
+}
+
+.header p {
+    margin: 5px 0 0;
+    color: #aaa;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+/* =========================
+   CAGNOTTE
+========================= */
+
+.pot {
+    background: linear-gradient(145deg, #1c1c1c, #090909);
+    border: 1px solid #6f4a24;
+    border-radius: 25px;
+    padding: 25px 20px;
+    text-align: center;
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.5),
+        inset 0 0 20px rgba(200,138,61,.06);
+    margin-bottom: 20px;
+}
+
+.pot-label {
+    color: #aaa;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.pot-value {
+    color: #d69a4a;
+    font-size: 52px;
+    font-weight: 800;
+    margin: 5px 0;
+}
+
+.pot-defaites {
+    color: #999;
+    font-size: 14px;
+}
+
+/* =========================
+   JOUEURS
+========================= */
+
+.players {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.player {
+    background: linear-gradient(145deg, #202020, #101010);
+    border: 1px solid #292929;
+    border-radius: 18px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.player::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #b87832;
+}
+
+.player-name {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.player-count {
+    color: #aaa;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.player-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 13px;
+}
+
+.player-money {
+    color: #d69a4a;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.add-button {
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #d69a4a, #9b6327);
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 9px 13px;
+    box-shadow: 0 5px 12px rgba(0,0,0,.3);
+}
+
+.add-button:active {
+    transform: scale(.94);
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.action {
+    border: 1px solid #333;
+    background: #151515;
+    color: white;
+    border-radius: 15px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.action:active {
+    transform: scale(.97);
+}
+
+.reset {
+    color: #ff7777;
+    border-color: #512525;
+}
+
+/* =========================
+   HISTORIQUE
+========================= */
+
+.history {
+    margin-top: 25px;
+}
+
+.history h2 {
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.history-list {
+    background: #101010;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 15px;
+    border-bottom: 1px solid #242424;
+    font-size: 14px;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-player {
+    font-weight: 600;
+}
+
+.history-value {
+    color: #d69a4a;
+    font-weight: 700;
+}
+
+.empty {
+    padding: 20px;
+    text-align: center;
+    color: #777;
+    font-size: 13px;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: 25px;
+    transform: translateX(-50%) translateY(100px);
+    background: #222;
+    border: 1px solid #6f4a24;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-size: 14px;
+    transition: .3s;
+    z-index: 999;
+}
+
+#toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+@media(max-width: 380px) {
+
+    .players {
+        grid-template-columns: 1fr;
+    }
+
+    .pot-value {
+        font-size: 45px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="ball">🎱</div>
+        <h1>CAGNOTTE BILLARD</h1>
+        <p>SAISON 2026</p>
+    </div>
+
+    <div class="pot">
+
+        <div class="pot-label">
+            Cagnotte
+        </div>
+
+        <div class="pot-value" id="total">
+            0 €
+        </div>
+
+        <div class="pot-defaites">
+            <span id="defaites">0</span> défaite(s)
+        </div>
+
+    </div>
+
+    <div class="players" id="players"></div>
+
+    <div class="actions">
+
+        <button class="action" onclick="undo()">
+            ↩️ Annuler dernière
+        </button>
+
+        <button class="action reset" onclick="resetAll()">
+            🗑️ Réinitialiser
+        </button>
+
+    </div>
+
+    <div class="history">
+
+        <h2>📋 Historique</h2>
+
+        <div class="history-list" id="history"></div>
+
+    </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+
+const PRIX = 2;
+
+const JOUEURS = [
+    "Jerem",
+    "Pascal",
+    "Nico F",
+    "Momo",
+    "Tristan",
+    "Nico",
+    "Yo",
+    "Did"
+];
+
+const STORAGE_KEY = "cagnotte_billard_v1";
+
+let data = JSON.parse(
+    localStorage.getItem(STORAGE_KEY)
+) || {
+    history: []
+};
+
+function save() {
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+    );
+}
+
+function addDefeat(player) {
+
+    data.history.push({
+        player: player,
+        amount: PRIX,
+        date: new Date().toLocaleString("fr-FR")
+    });
+
+    save();
+
+    render();
+
+    showToast(
+        player + " : +" + PRIX + " €"
+    );
+}
+
+function undo() {
+
+    if (data.history.length === 0) {
+        showToast("Aucune défaite à annuler");
+        return;
+    }
+
+    data.history.pop();
+
+    save();
+
+    render();
+
+    showToast("Dernière défaite annulée");
+}
+
+function resetAll() {
+
+    if (!confirm(
+        "Voulez-vous vraiment remettre la cagnotte à zéro ?"
+    )) {
+        return;
+    }
+
+    data.history = [];
+
+    save();
+
+    render();
+
+    showToast("Cagnotte remise à zéro");
+}
+
+function getCount(player) {
+
+    return data.history.filter(
+        item => item.player === player
+    ).length;
+}
+
+function renderPlayers() {
+
+    const container =
+        document.getElementById("players");
+
+    container.innerHTML = "";
+
+    JOUEURS.forEach(player => {
+
+        const count = getCount(player);
+
+        const money = count * PRIX;
+
+        const div =
+            document.createElement("div");
+
+        div.className = "player";
+
+        div.innerHTML = `
+
+            <div class="player-name">
+                ${player}
+            </div>
+
+            <div class="player-count">
+                ${count} défaite${count > 1 ? "s" : ""}
+            </div>
+
+            <div class="player-bottom">
+
+                <div class="player-money">
+                    ${money} €
+                </div>
+
+                <button
+                    class="add-button"
+                    onclick="addDefeat('${player}')">
+                    +${PRIX} €
+                </button>
+
+            </div>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+}
+
+function renderHistory() {
+
+    const container =
+        document.getElementById("history");
+
+    container.innerHTML = "";
+
+    if (data.history.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Aucune défaite enregistrée
+            </div>
+        `;
+
+        return;
+    }
+
+    [...data.history]
+        .reverse()
+        .forEach(item => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "history-item";
+
+            div.innerHTML = `
+
+                <div>
+                    <div class="history-player">
+                        🎱 ${item.player}
+                    </div>
+
+                    <small style="color:#777">
+                        ${item.date}
+                    </small>
+                </div>
+
+                <div class="history-value">
+                    +${item.amount} €
+                </div>
+
+            `;
+
+            container.appendChild(div);
+
+        });
+}
+
+function render() {
+
+    const total =
+        data.history.length * PRIX;
+
+    document.getElementById("total")
+        .textContent = total + " €";
+
+    document.getElementById("defaites")
+        .textContent = data.history.length;
+
+    renderPlayers();
+
+    renderHistory();
+}
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 1800);
+}
+
+render();
+
+</script>
+
+</body>
+</html>
